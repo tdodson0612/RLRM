@@ -1,0 +1,25 @@
+# pubspec.yaml
+
+name: roadmap_for_rl
+description: "RLRM - an unofficial, fan-made Beginner to SSL training checklist."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1 # state management
+  shared_preferences: ^2.3.4 # offline progress storage (JSON), used from Stage 7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  # Curriculum and training-pack JSON assets are declared in Stages 4-5,
+  # once those asset folders exist.
