@@ -51,11 +51,19 @@ class TrainingSession {
 
 /// A skill worth practicing now, with a score and a plain-words reason.
 class SkillRecommendation {
-  const SkillRecommendation(this.skill, this.score, this.reason);
+  const SkillRecommendation(
+    this.skill,
+    this.score,
+    this.reason, {
+    this.isMaintenance = false,
+  });
 
   final SkillModel skill;
   final double score;
   final String reason;
+
+  /// A mastered skill that is due a refresh.
+  final bool isMaintenance;
 }
 
 abstract final class SessionGenerator {
@@ -78,7 +86,12 @@ abstract final class SessionGenerator {
         ProgressLogic.frontier(curriculum, progress, profile.rank).index + 1;
     final found = <String, SkillRecommendation>{};
 
-    void offer(SkillModel skill, double score, String reason) {
+    void offer(
+      SkillModel skill,
+      double score,
+      String reason, {
+      bool maintenance = false,
+    }) {
       if (exclude.contains(skill.id) || !skill.appliesTo(playMode)) return;
       var total = score;
       if (_inFocus(profile.focus, skill.category)) total += 8;
@@ -88,7 +101,8 @@ abstract final class SessionGenerator {
       total -= skill.stage.index * 0.5;
       final old = found[skill.id];
       if (old == null || total > old.score) {
-        found[skill.id] = SkillRecommendation(skill, total, reason);
+        found[skill.id] =
+            SkillRecommendation(skill, total, reason, isMaintenance: maintenance);
       }
     }
 
@@ -131,8 +145,14 @@ abstract final class SessionGenerator {
             ? 1
             : skill.maintenanceInterval.inDays;
         final overdue = (days / interval).clamp(0.0, 3.0).toDouble();
-        offer(skill, 30 + overdue * 5,
-            'Maintenance: you last practiced this $days days ago.');
+        // Skills that many others build on matter most to keep sharp.
+        final foundation = curriculum.unlockedBy(skill.id).length.clamp(0, 5);
+        offer(
+          skill,
+          30 + overdue * 5 + foundation,
+          'Maintenance: you last practiced this $days days ago.',
+          maintenance: true,
+        );
       }
     }
 
@@ -168,8 +188,14 @@ abstract final class SessionGenerator {
       now: now,
     );
     final count = switch (minutes) { 10 => 1, 30 => 3, _ => 4 };
+    var chosen = ranked.take(count).toList();
+    // Longer sessions keep one slot for a skill that is due a refresh.
+    if (count >= 3 && !chosen.any((r) => r.isMaintenance)) {
+      final due = ranked.where((r) => r.isMaintenance).firstOrNull;
+      if (due != null) chosen = [...chosen.take(count - 1), due];
+    }
     return _assemble(
-      ranked.take(count).toList(),
+      chosen,
       curriculum: curriculum,
       progress: progress,
       minutes: minutes,

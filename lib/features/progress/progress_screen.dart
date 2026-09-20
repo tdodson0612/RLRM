@@ -84,6 +84,7 @@ class _Body extends ConsumerWidget {
                 SkillStatus.practicing,
                 SkillStatus.consistent,
                 SkillStatus.mastered,
+                SkillStatus.maintenanceRecommended,
               ])
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
@@ -151,6 +152,12 @@ class _Body extends ConsumerWidget {
   }
 
   int _count(SkillStatus status, Map<String, ProgressModel> progress) {
+    if (status == SkillStatus.maintenanceRecommended) {
+      final now = DateTime.now();
+      return curriculum.skills
+          .where((s) => ProgressLogic.maintenanceDue(s, progress[s.id], now))
+          .length;
+    }
     if (status == SkillStatus.notStarted) {
       final touched = progress.values
           .where((p) => p.status != SkillStatus.notStarted)

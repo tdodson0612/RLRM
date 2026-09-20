@@ -123,11 +123,13 @@ class SkillDetailScreen extends ConsumerWidget {
         ? <SkillModel>[]
         : ProgressLogic.unfinishedPrerequisites(
             skill, curriculum, progress, profile.rank);
+    final now = DateTime.now();
+    final last = mine?.lastPracticed;
     final status = ProgressLogic.displayStatus(
       skill: skill,
       progress: mine,
       prerequisitesMet: unfinished.isEmpty,
-      now: DateTime.now(),
+      now: now,
     );
     final packs = <TrainingPackModel>[];
     for (final id in skill.trainingPackIds) {
@@ -188,6 +190,39 @@ class SkillDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           StatusLabel(status),
+          if (last != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text('Last practiced: ${_daysAgo(last, now)}'),
+            ),
+          if (status == SkillStatus.maintenanceRecommended && last != null) ...[
+            const SizedBox(height: 12),
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Time for a refresh',
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(
+                    'You mastered ${skill.name}, but it has been '
+                    '${now.difference(last).inDays} days. A short refresh keeps '
+                    'it sharp. Run the first drill, then log it.',
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton.tonal(
+                    onPressed: () {
+                      notifier.logPractice(skill.id, 5);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Refresh logged.')),
+                      );
+                    },
+                    child: const Text('Log a quick refresh'),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -279,6 +314,15 @@ class SkillDetailScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _daysAgo(DateTime last, DateTime now) {
+  final days = now.difference(last).inDays;
+  return switch (days) {
+    0 => 'today',
+    1 => 'yesterday',
+    _ => '$days days ago',
+  };
 }
 
 class _StruggleSheet extends StatelessWidget {
