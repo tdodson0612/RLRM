@@ -2,7 +2,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/widgets/app_card.dart';
@@ -10,6 +9,8 @@ import '../../data/curriculum_repository.dart';
 import '../../domain/enums.dart';
 import '../../domain/models/curriculum_model.dart';
 import '../../domain/models/training_pack_model.dart';
+import 'pack_card.dart';
+import 'session_screen.dart';
 
 /// The order the brief asks for. Each pack sits under its first category.
 const _sectionOrder = [
@@ -66,6 +67,43 @@ class _PackList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Plan a session', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                'We pick what to practice, for how long, and why.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final (label, minutes) in const [
+                    ('Quick · 10 min', 10),
+                    ('Standard · 30 min', 30),
+                    ('Long · 60 min', 60),
+                  ])
+                    FilledButton.tonal(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => SessionScreen(
+                            minutes: minutes,
+                            showUnverified: showUnverified,
+                          ),
+                        ),
+                      ),
+                      child: Text(label),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        AppCard(
           child: Text(
             'Copy a code, open Rocket League, go to Training, then Custom, and '
             'search for the code. This app cannot open the game for you.\n\n'
@@ -100,71 +138,8 @@ class _PackList extends StatelessWidget {
       for (final pack in packs)
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _PackCard(pack: pack, curriculum: curriculum),
+          child: PackCard(pack: pack, curriculum: curriculum),
         ),
     ];
-  }
-}
-
-class _PackCard extends StatelessWidget {
-  const _PackCard({required this.pack, required this.curriculum});
-
-  final TrainingPackModel pack;
-  final CurriculumModel curriculum;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final skills = [
-      for (final id in pack.skills) curriculum.skillById(id)?.name ?? id,
-    ];
-    final modes = pack.applicableModes.map((m) => m.label).join(', ');
-    final checked = pack.isActive;
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(pack.name, style: theme.textTheme.titleMedium),
-          if (pack.creator != null)
-            Text('by ${pack.creator}', style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 8),
-          SelectableText(
-            pack.code,
-            style: theme.textTheme.titleLarge?.copyWith(letterSpacing: 1.2),
-          ),
-          const SizedBox(height: 8),
-          Text(pack.description, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 8),
-          Text('Aimed at: ${pack.difficulty.label} · Modes: $modes'),
-          Text('Helps with: ${skills.join(', ')}'),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(checked ? Icons.check_circle_outline : Icons.help_outline,
-                  size: 18, color: theme.colorScheme.secondary),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  checked ? 'Checked in game' : 'Not checked in game yet',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          FilledButton.icon(
-            icon: const Icon(Icons.copy_rounded),
-            label: const Text('Copy Code'),
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: pack.code));
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Training pack code copied!')),
-              );
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -40,9 +40,11 @@ void main() {
     expect(find.text('Easy Goals :D'), findsOneWidget);
     expect(find.text('by FL0'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Copy Code').first);
-    await tester.tap(find.text('Copy Code').first);
-    await tester.pump();
+    final copy = find.text('Copy Code').first;
+    await tester.ensureVisible(copy);
+    await tester.pumpAndSettle(); // let the scroll finish before tapping
+    await tester.tap(copy);
+    await tester.pumpAndSettle();
     expect(find.text('Training pack code copied!'), findsOneWidget);
   });
 
