@@ -92,6 +92,16 @@ enum StatMetric {
   final String label;
 }
 
+/// Where a skill is normally practiced.
+enum TrainingMethod {
+  freeplay('Freeplay'),
+  customTraining('Custom Training pack'),
+  match('Match play');
+
+  const TrainingMethod(this.label);
+  final String label;
+}
+
 /// Finds an enum value by its `name` when reading JSON. Bad data raises a
 /// clear error instead of quietly becoming a default.
 T enumByName<T extends Enum>(List<T> values, Object? raw, String field) {
