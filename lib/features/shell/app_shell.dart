@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/stage_placeholder.dart';
 import '../roadmap/roadmap_screen.dart';
 import '../settings/settings_screen.dart';
+import '../training/training_screen.dart';
 
 /// Which bottom-navigation tab is showing. Any screen can jump to another tab
 /// with `ref.read(navIndexProvider.notifier).goTo(index)`.
@@ -39,7 +40,8 @@ const _tabs = <_Tab>[
       'Beginner to SSL, stage by stage, with every skill one tap away.',
       screen: RoadmapScreen()),
   _Tab('Training', Icons.fitness_center_outlined, Icons.fitness_center_rounded,
-      5, 'Community training packs we have checked, with copyable codes, plus timed sessions.'),
+      5, 'Community training packs we have checked, with copyable codes, plus timed sessions.',
+      screen: TrainingScreen()),
   _Tab('Progress', Icons.insights_outlined, Icons.insights_rounded, 7,
       'Skills, drills, mastery and match-application tests, tracked offline.'),
   _Tab('Settings', Icons.settings_outlined, Icons.settings_rounded, 12,
