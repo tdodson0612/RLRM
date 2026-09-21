@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tdodson0612.roadmap_for_rl"
+    namespace = "com.tdodson.RLRM"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.tdodson0612.roadmap_for_rl"
+        applicationId = "com.tdodson.RLRM"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
