@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
 import 'data/profile_provider.dart';
+import 'data/theme_mode_provider.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/shell/app_shell.dart';
 
@@ -19,7 +20,7 @@ class RoadmapApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.dark, // becomes a Settings preference later
+      themeMode: ref.watch(themeModeProvider),
       home: onboarded ? const AppShell() : const OnboardingScreen(),
     );
   }

@@ -16,6 +16,7 @@ import 'package:roadmap_for_rl/features/search/search_screen.dart';
 import 'package:roadmap_for_rl/features/skills/skill_detail_screen.dart';
 import 'package:roadmap_for_rl/features/training/session_screen.dart';
 import 'package:roadmap_for_rl/features/training/training_screen.dart';
+import '../test_utils.dart';
 
 void main() {
   late CurriculumModel curriculum;
@@ -39,18 +40,14 @@ void main() {
 
   testWidgets('typing finds skills and packs, and a result opens its lesson',
       (tester) async {
+    useTallScreen(tester);
     await open(tester, const SearchScreen());
     await tester.enterText(find.byType(TextField), 'flick');
     await tester.pumpAndSettle();
 
     expect(find.text('Flick Fundamentals'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Delayed Flicks'), 300);
     expect(find.text('Delayed Flicks'), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('Flick Fundamentals'),
-      -300,
-    );
     await tester.tap(find.text('Flick Fundamentals'));
     await tester.pumpAndSettle();
     expect(find.text('What is it?'), findsOneWidget);
@@ -58,6 +55,7 @@ void main() {
 
   testWidgets('hearting a skill saves it and lists it under Favorites',
       (tester) async {
+    useTallScreen(tester);
     final container = await open(
       tester,
       SkillDetailScreen(skill: curriculum.skillById('flick_fundamentals')!),
@@ -76,6 +74,7 @@ void main() {
   });
 
   testWidgets('a pack can be hearted from the Training tab', (tester) async {
+    useTallScreen(tester);
     final container =
         await open(tester, const TrainingScreen(showUnverified: true));
     final heart = find.byTooltip('Add to favorites').first;
@@ -88,6 +87,7 @@ void main() {
 
   testWidgets('a session can be saved and removed with the heart',
       (tester) async {
+    useTallScreen(tester);
     final container = await open(tester, const SessionScreen(minutes: 10));
     await tester.tap(find.byTooltip('Save this session'));
     await tester.pumpAndSettle();

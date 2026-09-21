@@ -13,6 +13,7 @@ import 'package:roadmap_for_rl/domain/controls/control_bindings.dart';
 import 'package:roadmap_for_rl/domain/models/curriculum_model.dart';
 import 'package:roadmap_for_rl/features/roadmap/roadmap_screen.dart';
 import 'package:roadmap_for_rl/features/skills/skill_detail_screen.dart';
+import '../test_utils.dart';
 
 void main() {
   late CurriculumModel curriculum;
@@ -33,6 +34,7 @@ void main() {
 
   testWidgets('lesson text shows the default buttons, never the tokens',
       (tester) async {
+    useTallScreen(tester);
     final skill = curriculum.skillById('boost_basics')!;
     await tester.pumpWidget(app(SkillDetailScreen(skill: skill)));
     await tester.pumpAndSettle();
@@ -43,6 +45,7 @@ void main() {
   });
 
   testWidgets("lesson text uses the player's own bindings", (tester) async {
+    useTallScreen(tester);
     final skill = curriculum.skillById('boost_basics')!;
     final mine = const ControlBindings().rebind(ControlAction.boost, 'R1');
     await tester.pumpWidget(app(SkillDetailScreen(skill: skill), bindings: mine));
@@ -54,17 +57,18 @@ void main() {
 
   testWidgets('a skill with a pack shows it further down the page',
       (tester) async {
+    useTallScreen(tester);
     final skill = curriculum.skillById('basic_shooting')!;
     await tester.pumpWidget(
       app(SkillDetailScreen(skill: skill, showUnverified: true)),
     );
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(find.text('Easy Goals :D'), 400);
     expect(find.text('Easy Goals :D'), findsOneWidget);
   });
 
   testWidgets('tapping a skill on the Roadmap opens its page', (tester) async {
+    useTallScreen(tester);
     await tester.pumpWidget(app(const RoadmapScreen()));
     await tester.pumpAndSettle();
 

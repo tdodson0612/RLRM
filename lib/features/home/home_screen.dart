@@ -134,6 +134,8 @@ class _HomeBody extends ConsumerWidget {
               LinearProgressIndicator(
                 value: total == 0 ? 0 : finished / total,
                 minHeight: 8,
+                semanticsLabel: 'Overall progress',
+                semanticsValue: '$finished of $total skills',
               ),
             ],
           ),
@@ -161,6 +163,7 @@ class _HomeBody extends ConsumerWidget {
           const AppCard(child: Text('Nothing new to start right now.'))
         else
           AppCard(
+            highlight: true,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

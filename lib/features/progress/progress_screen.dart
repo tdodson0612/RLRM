@@ -71,7 +71,12 @@ class _Body extends ConsumerWidget {
                   style: theme.textTheme.headlineSmall),
               Text('$finished of $total skills consistent or mastered'),
               const SizedBox(height: 8),
-              LinearProgressIndicator(value: percent, minHeight: 8),
+              LinearProgressIndicator(
+                value: percent,
+                minHeight: 8,
+                semanticsLabel: 'Overall progress',
+                semanticsValue: '$finished of $total skills',
+              ),
             ],
           ),
         ),
@@ -205,7 +210,11 @@ class _Bar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          LinearProgressIndicator(value: total == 0 ? 0 : finished / total),
+          LinearProgressIndicator(
+            value: total == 0 ? 0 : finished / total,
+            semanticsLabel: '$label progress',
+            semanticsValue: '$finished of $total skills',
+          ),
         ],
       ),
     );

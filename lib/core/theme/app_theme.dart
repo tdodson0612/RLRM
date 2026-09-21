@@ -19,6 +19,9 @@ abstract final class AppColors {
 
 /// Dark is the default identity; light exists for the Settings toggle.
 abstract final class AppTheme {
+  /// Atkinson Hyperlegible, bundled in assets/fonts (SIL Open Font License).
+  static const fontFamily = 'AtkinsonHyperlegible';
+
   static final ThemeData dark = _build(
     const ColorScheme.dark(
       primary: AppColors.rose,
@@ -42,7 +45,11 @@ abstract final class AppTheme {
   );
 
   static ThemeData _build(ColorScheme scheme) {
-    final base = ThemeData(brightness: scheme.brightness, colorScheme: scheme);
+    final base = ThemeData(
+      brightness: scheme.brightness,
+      colorScheme: scheme,
+      fontFamily: fontFamily,
+    );
     final text = base.textTheme;
     return base.copyWith(
       scaffoldBackgroundColor: scheme.surface,

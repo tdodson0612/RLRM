@@ -184,7 +184,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
               label: const Text('Copy Code'),
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: pack.code));
-                if (!mounted) return;
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Training pack code copied!')),
                 );

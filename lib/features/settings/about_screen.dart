@@ -1,9 +1,11 @@
 // lib/features/settings/about_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/legal/legal_text.dart';
 import '../../core/widgets/app_card.dart';
+import '../../data/curriculum_repository.dart';
 
 const _sections = <(String, String)>[
   ('Unofficial fan project', LegalText.unofficialNotice),
@@ -13,17 +15,24 @@ const _sections = <(String, String)>[
   ('Community training packs', LegalText.communityPacksNotice),
   ('No promises', LegalText.noGuaranteeNotice),
   (
+    'Credits',
+    'Text is set in Atkinson Hyperlegible by the Braille Institute of '
+        'America, used under the SIL Open Font License. Icons are Material '
+        'Icons (Apache License 2.0).',
+  ),
+  (
     'Epic Games Fan Content Policy',
     'Read it at ${LegalText.policyUrl} (last checked ${LegalText.policyCheckedOn}).',
   ),
 ];
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final curriculum = ref.watch(curriculumProvider).valueOrNull;
     return Scaffold(
       appBar: AppBar(title: const Text('About & legal')),
       body: ListView(
@@ -34,6 +43,13 @@ class AboutScreen extends StatelessWidget {
           Text(LegalText.subtitle, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 16),
           for (final (title, body) in _sections) _Section(title, body),
+          if (curriculum != null)
+            _Section(
+              'Data versions',
+              'Curriculum version ${curriculum.version}. Training pack data '
+                  'version ${curriculum.packDataVersion}. Last updated '
+                  '${curriculum.lastUpdated.toIso8601String().substring(0, 10)}.',
+            ),
         ],
       ),
     );

@@ -10,11 +10,15 @@ class AppCard extends StatelessWidget {
     required this.child,
     this.onTap,
     this.padding = const EdgeInsets.all(16),
+    this.highlight = false,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
+
+  /// A rounder card with an accent border, for the one thing to do next.
+  final bool highlight;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +27,11 @@ class AppCard extends StatelessWidget {
       color: scheme.surfaceContainer,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: scheme.outlineVariant),
+        borderRadius: BorderRadius.circular(highlight ? 28 : 20),
+        side: BorderSide(
+          color: highlight ? scheme.primary : scheme.outlineVariant,
+          width: highlight ? 2 : 1,
+        ),
       ),
       child: InkWell(
         onTap: onTap,

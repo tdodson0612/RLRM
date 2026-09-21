@@ -11,6 +11,7 @@ import 'package:roadmap_for_rl/core/theme/app_theme.dart';
 import 'package:roadmap_for_rl/data/curriculum_repository.dart';
 import 'package:roadmap_for_rl/domain/models/curriculum_model.dart';
 import 'package:roadmap_for_rl/features/training/training_screen.dart';
+import '../test_utils.dart';
 
 void main() {
   late CurriculumModel curriculum;
@@ -30,6 +31,7 @@ void main() {
       );
 
   testWidgets('lists packs with their credit and copies a code', (tester) async {
+    useTallScreen(tester);
     // Tests have no real clipboard, so answer the platform call ourselves.
     tester.binding.defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform, (call) async => null);
@@ -50,6 +52,7 @@ void main() {
 
   testWidgets('unchecked packs are hidden when showUnverified is false',
       (tester) async {
+    useTallScreen(tester);
     await tester.pumpWidget(app(showUnverified: false));
     await tester.pumpAndSettle();
 

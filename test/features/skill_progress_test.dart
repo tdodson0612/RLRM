@@ -12,6 +12,7 @@ import 'package:roadmap_for_rl/data/progress_provider.dart';
 import 'package:roadmap_for_rl/domain/enums.dart';
 import 'package:roadmap_for_rl/domain/models/curriculum_model.dart';
 import 'package:roadmap_for_rl/features/skills/skill_detail_screen.dart';
+import '../test_utils.dart';
 
 void main() {
   late CurriculumModel curriculum;
@@ -23,6 +24,7 @@ void main() {
   });
 
   Future<ProviderContainer> open(WidgetTester tester, String skillId) async {
+    useTallScreen(tester);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [curriculumProvider.overrideWith((ref) => curriculum)],

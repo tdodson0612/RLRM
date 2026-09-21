@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/legal/legal_text.dart';
 import '../../core/widgets/app_card.dart';
 import '../../data/profile_provider.dart';
+import '../../data/theme_mode_provider.dart';
 import '../../data/progress_provider.dart';
 import '../../domain/enums.dart';
 import '../favorites/favorites_screen.dart';
@@ -45,6 +46,7 @@ class SettingsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final profile = ref.watch(profileProvider);
     final notifier = ref.read(profileProvider.notifier);
+    final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
@@ -84,6 +86,28 @@ class SettingsScreen extends ConsumerWidget {
                             notifier.save(profile.copyWith(mode: m)),
                       ),
                   ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Appearance', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 8),
+                SegmentedButton<ThemeMode>(
+                  segments: const [
+                    ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+                    ButtonSegment(value: ThemeMode.light, label: Text('Light')),
+                    ButtonSegment(
+                        value: ThemeMode.system, label: Text('System')),
+                  ],
+                  selected: {themeMode},
+                  onSelectionChanged: (selection) => ref
+                      .read(themeModeProvider.notifier)
+                      .choose(selection.first),
                 ),
               ],
             ),
