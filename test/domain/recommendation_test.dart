@@ -50,6 +50,7 @@ void main() {
       progress: const {},
       minutes: 30,
       mode: GameMode.all,
+      rank: Stage.bronze,
       skillIds: ['basic_shooting', 'nope', 'ball_contact'],
     );
     expect(session.activities.map((a) => a.skill.id),

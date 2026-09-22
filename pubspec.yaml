@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1 # state management
   shared_preferences: ^2.3.4 # offline progress storage (JSON), used from Stage 7
+  url_launcher: ^6.3.1 # opens a mailto: draft for pack-difficulty reports; never used for http/https
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +26,7 @@ flutter:
   assets:
     - assets/curriculum/
     - assets/fonts/OFL.txt
+    - assets/cars/
   fonts:
     - family: AtkinsonHyperlegible
       fonts:

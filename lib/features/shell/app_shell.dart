@@ -21,23 +21,21 @@ class NavIndex extends Notifier<int> {
 final navIndexProvider = NotifierProvider<NavIndex, int>(NavIndex.new);
 
 class _Tab {
-  const _Tab(this.label, this.icon, this.selectedIcon, this.screen);
+  const _Tab(this.label, this.carAsset, this.screen);
 
   final String label;
-  final IconData icon;
-  final IconData selectedIcon;
+
+  /// An original car icon (see assets/cars/), not a Rocket League vehicle.
+  final String carAsset;
   final Widget screen;
 }
 
 const _tabs = <_Tab>[
-  _Tab('Home', Icons.home_outlined, Icons.home_rounded, HomeScreen()),
-  _Tab('Roadmap', Icons.map_outlined, Icons.map_rounded, RoadmapScreen()),
-  _Tab('Training', Icons.fitness_center_outlined, Icons.fitness_center_rounded,
-      TrainingScreen()),
-  _Tab('Progress', Icons.insights_outlined, Icons.insights_rounded,
-      ProgressScreen()),
-  _Tab('Settings', Icons.settings_outlined, Icons.settings_rounded,
-      SettingsScreen()),
+  _Tab('Home', 'assets/cars/nav_home.png', HomeScreen()),
+  _Tab('Roadmap', 'assets/cars/nav_roadmap.png', RoadmapScreen()),
+  _Tab('Training', 'assets/cars/nav_training.png', TrainingScreen()),
+  _Tab('Progress', 'assets/cars/nav_progress.png', ProgressScreen()),
+  _Tab('Settings', 'assets/cars/nav_settings.png', SettingsScreen()),
 ];
 
 class AppShell extends ConsumerWidget {
@@ -57,8 +55,15 @@ class AppShell extends ConsumerWidget {
         destinations: [
           for (final tab in _tabs)
             NavigationDestination(
-              icon: Icon(tab.icon),
-              selectedIcon: Icon(tab.selectedIcon),
+              // The car art is a wide rectangular crop, not a perfect
+              // square, so BoxFit.contain keeps its true proportions inside
+              // the fixed icon box instead of squishing it.
+              icon: Image.asset(
+                tab.carAsset,
+                width: 28,
+                height: 28,
+                fit: BoxFit.contain,
+              ),
               label: tab.label,
             ),
         ],

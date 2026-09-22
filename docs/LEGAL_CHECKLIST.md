@@ -26,7 +26,7 @@ game (no memory reading, no automation), so there is no conflict with them.
 - Open-source licenses page, including the typeface license
 - Original app icon (a road with waypoints) and a bundled open-license typeface
 - Store listing and privacy policy drafts (`docs/STORE_LISTING.md`, `docs/PRIVACY_POLICY.md`)
-- No network code: the release app does not use the internet
+- No network code, with one narrow exception: reporting a training pack's difficulty opens a mailto: draft in the player's own email app. The app never sends it and never talks to a server; `test/release_checks_test.dart` enforces that this exception stays limited to `lib/data/pack_report_mail.dart` and to the mailto: scheme.
 
 ## Before release
 1. Try each training pack in-game. Only packs you have seen load and match their name should be marked active.

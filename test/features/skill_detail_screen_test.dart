@@ -9,11 +9,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:roadmap_for_rl/core/theme/app_theme.dart';
 import 'package:roadmap_for_rl/data/control_bindings_provider.dart';
 import 'package:roadmap_for_rl/data/curriculum_repository.dart';
+import 'package:roadmap_for_rl/data/profile_provider.dart';
 import 'package:roadmap_for_rl/domain/controls/control_bindings.dart';
+import 'package:roadmap_for_rl/domain/enums.dart';
 import 'package:roadmap_for_rl/domain/models/curriculum_model.dart';
 import 'package:roadmap_for_rl/features/roadmap/roadmap_screen.dart';
+import 'package:roadmap_for_rl/domain/models/player_profile.dart';
 import 'package:roadmap_for_rl/features/skills/skill_detail_screen.dart';
 import '../test_utils.dart';
+
+/// A player of a fixed rank, so the visible pack band is predictable.
+class _RankedPlayer extends ProfileNotifier {
+  _RankedPlayer(this.rank);
+
+  final Stage rank;
+
+  @override
+  PlayerProfile build() => PlayerProfile(rank: rank, onboarded: true);
+}
 
 void main() {
   late CurriculumModel curriculum;
@@ -24,9 +37,11 @@ void main() {
         CurriculumModel.fromJson(jsonDecode(raw) as Map<String, dynamic>);
   });
 
-  Widget app(Widget home, {ControlBindings? bindings}) => ProviderScope(
+  Widget app(Widget home, {ControlBindings? bindings, Stage rank = Stage.bronze}) =>
+      ProviderScope(
         overrides: [
           curriculumProvider.overrideWith((ref) => curriculum),
+          profileProvider.overrideWith(() => _RankedPlayer(rank)),
           if (bindings != null) controlBindingsProvider.overrideWithValue(bindings),
         ],
         child: MaterialApp(theme: AppTheme.dark, home: home),
@@ -64,7 +79,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Easy Goals :D'), findsOneWidget);
+    expect(find.text("Woolly's Basic Aiming Practice"), findsOneWidget);
   });
 
   testWidgets('tapping a skill on the Roadmap opens its page', (tester) async {

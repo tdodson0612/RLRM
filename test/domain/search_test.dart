@@ -15,12 +15,17 @@ void main() {
     c = CurriculumModel.fromJson(jsonDecode(raw) as Map<String, dynamic>);
   });
 
-  test('flick finds the flick skills first, and the flick pack', () {
+  test('flick finds the flick skills first', () {
     final r = Search.run(c, 'flick');
     final ids = r.skills.map((s) => s.id).toList();
     expect(ids.take(3), containsAll(['flick_fundamentals', 'consistent_flicks', 'advanced_flicks']));
     expect(r.skills.first.name.toLowerCase(), contains('flick'));
-    expect(r.packs.map((p) => p.id), contains('pack_delayed_flicks'));
+  });
+
+  test('shadow finds the shadow defense skills and its pack', () {
+    final r = Search.run(c, 'shadow');
+    expect(r.skills.map((s) => s.id), contains('shadow_defense_1'));
+    expect(r.packs.map((p) => p.id), contains('pack_shadow_defense_101'));
   });
 
   test('a plural word still finds the singular', () {
@@ -48,7 +53,7 @@ void main() {
   });
 
   test('packs can be found by creator', () {
-    final r = Search.run(c, 'skogur');
-    expect(r.packs.first.id, 'pack_powershot_practice');
+    final r = Search.run(c, 'woollyhat');
+    expect(r.packs.first.id, 'pack_woolly_aiming');
   });
 }

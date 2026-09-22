@@ -116,6 +116,13 @@ abstract final class ProgressLogic {
     return stored;
   }
 
+  /// Packs at your rank or one stage below. A Gold player sees Silver and
+  /// Gold packs (easy or right at level) but nothing above Gold. A Beginner
+  /// sees only Beginner-difficulty content, since there is no stage below it.
+  static bool packFitsRank(Stage packDifficulty, Stage playerRank) =>
+      packDifficulty.index <= playerRank.index &&
+      packDifficulty.index >= playerRank.index - 1;
+
   /// The highest stage where at least 70% of the core skills are done, or the
   /// player's own rank if that is higher. Recommendations reach one past it.
   static Stage frontier(

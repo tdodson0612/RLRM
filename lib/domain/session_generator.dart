@@ -6,6 +6,7 @@ import 'models/player_profile.dart';
 import 'models/progress_model.dart';
 import 'models/skill_model.dart';
 import 'models/training_pack_model.dart';
+import '../data/pack_report_provider.dart' show PackReport, effectiveDifficulty;
 import 'progress_logic.dart';
 
 /// One thing to practice in a session.
@@ -177,6 +178,7 @@ abstract final class SessionGenerator {
     GameMode? mode,
     Set<String> exclude = const {},
     bool allowUnverifiedPacks = false,
+    Map<String, PackReport> packReports = const {},
     DateTime? now,
   }) {
     final ranked = recommend(
@@ -200,19 +202,24 @@ abstract final class SessionGenerator {
       progress: progress,
       minutes: minutes,
       mode: mode ?? profile.mode,
+      rank: profile.rank,
       allowUnverified: allowUnverifiedPacks,
+      packReports: packReports,
     );
   }
 
   /// Rebuilds a saved (favorite) session for the same skills, using today's
-  /// progress for the goals and packs.
+  /// progress for the goals and packs. [rank] still gates which packs are
+  /// offered, so a saved session never resurfaces a pack above your level.
   static TrainingSession fromSkills({
     required CurriculumModel curriculum,
     required Map<String, ProgressModel> progress,
     required int minutes,
     required GameMode mode,
+    required Stage rank,
     required List<String> skillIds,
     bool allowUnverifiedPacks = false,
+    Map<String, PackReport> packReports = const {},
   }) {
     return _assemble(
       [
@@ -225,7 +232,9 @@ abstract final class SessionGenerator {
       progress: progress,
       minutes: minutes,
       mode: mode,
+      rank: rank,
       allowUnverified: allowUnverifiedPacks,
+      packReports: packReports,
     );
   }
 
@@ -235,14 +244,16 @@ abstract final class SessionGenerator {
     required Map<String, ProgressModel> progress,
     required int minutes,
     required GameMode mode,
+    required Stage rank,
     required bool allowUnverified,
+    Map<String, PackReport> packReports = const {},
   }) {
     final each = chosen.isEmpty ? 0 : minutes ~/ chosen.length;
     var packsUsed = 0;
     final activities = <SessionActivity>[];
     for (final c in chosen) {
       final pack = packsUsed < 3
-          ? _pickPack(c.skill, curriculum, mode, allowUnverified)
+          ? _pickPack(c.skill, curriculum, mode, rank, allowUnverified, packReports)
           : null;
       if (pack != null) packsUsed++;
       final method = pack != null
@@ -290,7 +301,9 @@ abstract final class SessionGenerator {
     SkillModel skill,
     CurriculumModel curriculum,
     GameMode mode,
+    Stage profileRank,
     bool allowUnverified,
+    Map<String, PackReport> packReports,
   ) {
     for (final id in skill.trainingPackIds) {
       final pack = curriculum.packById(id);
@@ -300,7 +313,9 @@ abstract final class SessionGenerator {
       final fits = mode == GameMode.all ||
           pack.applicableModes.contains(GameMode.all) ||
           pack.applicableModes.contains(mode);
-      if (usable && fits) return pack;
+      final fitsRank = ProgressLogic.packFitsRank(
+          effectiveDifficulty(pack, packReports), profileRank);
+      if (usable && fits && fitsRank) return pack;
     }
     return null;
   }

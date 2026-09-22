@@ -9,6 +9,7 @@ import '../../core/widgets/app_card.dart';
 import '../../data/control_bindings_provider.dart';
 import '../../data/curriculum_repository.dart';
 import '../../data/favorites_provider.dart';
+import '../../data/pack_report_provider.dart';
 import '../../data/profile_provider.dart';
 import '../../data/progress_provider.dart';
 import '../../domain/enums.dart';
@@ -47,14 +48,17 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   TrainingSession? _generate() {
     final curriculum = ref.read(curriculumProvider).valueOrNull;
     if (curriculum == null) return null;
+    final packReports = ref.read(packReportsProvider);
     if (_useSaved) {
       return SessionGenerator.fromSkills(
         curriculum: curriculum,
         progress: ref.read(progressProvider),
         minutes: widget.minutes,
         mode: _mode ?? ref.read(profileProvider).mode,
+        rank: ref.read(profileProvider).rank,
         skillIds: widget.savedSkillIds!,
         allowUnverifiedPacks: widget.showUnverified,
+        packReports: packReports,
       );
     }
     return SessionGenerator.generate(
@@ -65,6 +69,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       mode: _mode,
       exclude: _excluded,
       allowUnverifiedPacks: widget.showUnverified,
+      packReports: packReports,
     );
   }
 

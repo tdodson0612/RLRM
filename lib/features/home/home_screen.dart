@@ -44,13 +44,28 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: curriculum.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text('Could not load your training: $error'),
-        ),
-        data: (data) => _HomeBody(curriculum: data),
+      body: Stack(
+        children: [
+          // An original car (see assets/cars/bg_car.png, not a Rocket League
+          // vehicle) sitting behind the content, faint enough to never
+          // compete with the text or progress bars on top of it.
+          Positioned(
+            right: -60,
+            bottom: -40,
+            child: Opacity(
+              opacity: 0.08,
+              child: Image.asset('assets/cars/bg_car.png', width: 340),
+            ),
+          ),
+          curriculum.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, _) => Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('Could not load your training: $error'),
+            ),
+            data: (data) => _HomeBody(curriculum: data),
+          ),
+        ],
       ),
     );
   }

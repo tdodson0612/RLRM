@@ -19,8 +19,20 @@ deletes it, and Settings > Reset progress clears your progress.
 ## What the app does not do
 - It has no accounts, sign-in or profiles.
 - It has no analytics, advertising or tracking.
-- It does not use the internet. It works fully offline.
+- It works fully offline. The only exception is described just below, and it
+  only happens if you choose it.
 - It does not use your camera, photos, microphone, contacts or location.
+
+## Reporting a training pack's difficulty
+If you tap "Report difficulty" on a training pack, two things happen:
+- On your device only, that pack now shows at the difficulty you reported
+  (one stage easier or harder). No one else's copy of the app changes.
+- RLRM opens your phone's own email app with a message already written to
+  the developer (terryd0612@gmail.com), so the listed difficulty can be
+  fixed for everyone later. RLRM does not send this itself and has no server
+  to send it through. Nothing leaves your device unless you press Send in
+  your own email app, and at that point you are sending an email the normal
+  way, to the address shown before you send it.
 
 If a future version adds an optional feature that reads a photo or screenshot of
 your game stats, this policy will be updated before that version is released, and

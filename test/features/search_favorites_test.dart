@@ -9,14 +9,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:roadmap_for_rl/core/theme/app_theme.dart';
 import 'package:roadmap_for_rl/data/curriculum_repository.dart';
 import 'package:roadmap_for_rl/data/favorites_provider.dart';
+import 'package:roadmap_for_rl/data/profile_provider.dart';
 import 'package:roadmap_for_rl/data/progress_provider.dart';
+import 'package:roadmap_for_rl/domain/enums.dart';
 import 'package:roadmap_for_rl/domain/models/curriculum_model.dart';
+import 'package:roadmap_for_rl/domain/models/player_profile.dart';
 import 'package:roadmap_for_rl/features/favorites/favorites_screen.dart';
 import 'package:roadmap_for_rl/features/search/search_screen.dart';
 import 'package:roadmap_for_rl/features/skills/skill_detail_screen.dart';
 import 'package:roadmap_for_rl/features/training/session_screen.dart';
 import 'package:roadmap_for_rl/features/training/training_screen.dart';
 import '../test_utils.dart';
+
+/// A player of a fixed rank, so the visible pack band is predictable.
+class _RankedPlayer extends ProfileNotifier {
+  _RankedPlayer(this.rank);
+
+  final Stage rank;
+
+  @override
+  PlayerProfile build() => PlayerProfile(rank: rank, onboarded: true);
+}
 
 void main() {
   late CurriculumModel curriculum;
@@ -27,10 +40,17 @@ void main() {
         CurriculumModel.fromJson(jsonDecode(raw) as Map<String, dynamic>);
   });
 
-  Future<ProviderContainer> open(WidgetTester tester, Widget home) async {
+  Future<ProviderContainer> open(
+    WidgetTester tester,
+    Widget home, {
+    Stage rank = Stage.bronze,
+  }) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [curriculumProvider.overrideWith((ref) => curriculum)],
+        overrides: [
+          curriculumProvider.overrideWith((ref) => curriculum),
+          profileProvider.overrideWith(() => _RankedPlayer(rank)),
+        ],
         child: MaterialApp(theme: AppTheme.dark, home: home),
       ),
     );
@@ -42,13 +62,13 @@ void main() {
       (tester) async {
     useTallScreen(tester);
     await open(tester, const SearchScreen());
-    await tester.enterText(find.byType(TextField), 'flick');
+    await tester.enterText(find.byType(TextField), 'shadow');
     await tester.pumpAndSettle();
 
-    expect(find.text('Flick Fundamentals'), findsOneWidget);
-    expect(find.text('Delayed Flicks'), findsOneWidget);
+    expect(find.text('Shadow Defense'), findsOneWidget);
+    expect(find.text('[Why You Suck] Shadow Defense'), findsOneWidget);
 
-    await tester.tap(find.text('Flick Fundamentals'));
+    await tester.tap(find.text('Shadow Defense'));
     await tester.pumpAndSettle();
     expect(find.text('What is it?'), findsOneWidget);
   });

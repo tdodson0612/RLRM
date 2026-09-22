@@ -6,9 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/widgets/app_card.dart';
 import '../../data/curriculum_repository.dart';
+import '../../data/pack_report_provider.dart';
+import '../../data/profile_provider.dart';
 import '../../domain/enums.dart';
 import '../../domain/models/curriculum_model.dart';
 import '../../domain/models/training_pack_model.dart';
+import '../../domain/progress_logic.dart';
 import 'pack_card.dart';
 import 'session_screen.dart';
 
@@ -34,6 +37,8 @@ class TrainingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final curriculum = ref.watch(curriculumProvider);
+    final rank = ref.watch(profileProvider.select((p) => p.rank));
+    final reports = ref.watch(packReportsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Training')),
       body: curriculum.when(
@@ -42,27 +47,36 @@ class TrainingScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: Text('Could not load the training packs: $error'),
         ),
-        data: (data) => _PackList(data, showUnverified: showUnverified),
+        data: (data) => _PackList(
+            data, rank: rank, reports: reports, showUnverified: showUnverified),
       ),
     );
   }
 }
 
 class _PackList extends StatelessWidget {
-  const _PackList(this.curriculum, {required this.showUnverified});
+  const _PackList(this.curriculum,
+      {required this.rank, required this.reports, required this.showUnverified});
 
   final CurriculumModel curriculum;
+  final Stage rank;
+  final Map<String, PackReport> reports;
   final bool showUnverified;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // curriculum.trainingPacks is already in the right order: easiest rank
+    // tier first, and within a tier by which skill it teaches first, so no
+    // further sorting happens here. Re-sorting on difficulty alone would
+    // undo the prerequisite-respecting order the builder computed.
     final shown = [
       for (final p in curriculum.trainingPacks)
-        if (p.status == PackStatus.active ||
-            (showUnverified && p.status == PackStatus.needsVerification))
+        if ((p.status == PackStatus.active ||
+                (showUnverified && p.status == PackStatus.needsVerification)) &&
+            ProgressLogic.packFitsRank(effectiveDifficulty(p, reports), rank))
           p,
-    ]..sort((a, b) => a.difficulty.index.compareTo(b.difficulty.index));
+    ];
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -108,9 +122,10 @@ class _PackList extends StatelessWidget {
             'Copy a code, open Rocket League, go to Training, then Custom, and '
             'search for the code. This app cannot open the game for you.\n\n'
             'Packs are made by community creators and are listed with their '
-            'credit. Codes come from official Rocket League news posts from '
-            '2019 to 2020, and creators can remove packs, so a code may not '
-            'load.',
+            'credit. You are seeing packs at or one level below your rank '
+            '(${rank.label}), so a pack shown here should feel doable, not '
+            'punishing. Change your rank in Settings if this list should be '
+            'different. Creators can remove packs, so a code may not load.',
             style: theme.textTheme.bodyMedium,
           ),
         ),

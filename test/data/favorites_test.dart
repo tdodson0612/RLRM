@@ -39,11 +39,11 @@ void main() {
   test('favorite packs toggle on and off and are saved', () async {
     final first = await open({});
     final notifier = first.read(favoritesProvider.notifier);
-    notifier.togglePack('pack_easy_goals');
-    expect(first.read(favoritesProvider).packs, {'pack_easy_goals'});
-    expect(reopen(first).read(favoritesProvider).packs, {'pack_easy_goals'});
+    notifier.togglePack('pack_novice_defender');
+    expect(first.read(favoritesProvider).packs, {'pack_novice_defender'});
+    expect(reopen(first).read(favoritesProvider).packs, {'pack_novice_defender'});
 
-    notifier.togglePack('pack_easy_goals');
+    notifier.togglePack('pack_novice_defender');
     expect(first.read(favoritesProvider).packs, isEmpty);
   });
 

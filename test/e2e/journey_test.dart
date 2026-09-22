@@ -245,7 +245,7 @@ void main() {
     first.read(progressProvider.notifier)
       ..logPractice('driving_basics', 10)
       ..toggleFavorite('flick_fundamentals');
-    first.read(favoritesProvider.notifier).togglePack('pack_easy_goals');
+    first.read(favoritesProvider.notifier).togglePack('pack_novice_defender');
     first.read(bindingsStateProvider.notifier)
         .rebind(ControlAction.boost, 'R1');
     first.read(themeModeProvider.notifier).choose(ThemeMode.light);
@@ -260,7 +260,7 @@ void main() {
     expect(again.read(progressProvider)['driving_basics']?.lastPracticed,
         isNotNull);
     expect(again.read(progressProvider)['flick_fundamentals']?.favorite, isTrue);
-    expect(again.read(favoritesProvider).packs, {'pack_easy_goals'});
+    expect(again.read(favoritesProvider).packs, {'pack_novice_defender'});
     expect(again.read(controlBindingsProvider).resolve('[Boost]'), 'R1');
     expect(tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
         ThemeMode.light);
@@ -308,15 +308,15 @@ void main() {
 
     await tester.tap(find.byTooltip('Search'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'flick');
+    await tester.enterText(find.byType(TextField), 'shadow');
     await tester.pumpAndSettle();
-    expect(find.text('Flick Fundamentals'), findsOneWidget);
-    expect(find.text('Delayed Flicks'), findsOneWidget);
+    expect(find.text('Shadow Defense'), findsOneWidget);
+    expect(find.text('[Why You Suck] Shadow Defense'), findsOneWidget);
 
-    await tapText(tester, 'Flick Fundamentals');
+    await tapText(tester, 'Shadow Defense');
     await tester.tap(find.byTooltip('Add to favorites'));
     await tester.pumpAndSettle();
-    expect(container.read(progressProvider)['flick_fundamentals']?.favorite,
+    expect(container.read(progressProvider)['shadow_defense_1']?.favorite,
         isTrue);
   });
 }

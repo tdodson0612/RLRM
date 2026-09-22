@@ -88,21 +88,36 @@ void main() {
 
   test('a pack is used only when allowed, and never for skills without one', () {
     final progress = {
-      'basic_shooting': const ProgressModel(
-        skillId: 'basic_shooting',
+      'basic_saves': const ProgressModel(
+        skillId: 'basic_saves',
         status: SkillStatus.practicing,
       ),
     };
-    const beginner = PlayerProfile(onboarded: true);
+    const silver = PlayerProfile(rank: Stage.silver, onboarded: true);
     final withPacks =
-        make(10, progress: progress, profile: beginner, packs: true);
-    expect(withPacks.activities.first.skill.id, 'basic_shooting');
-    expect(withPacks.activities.first.pack?.name, 'Easy Goals :D');
+        make(10, progress: progress, profile: silver, packs: true);
+    expect(withPacks.activities.first.skill.id, 'basic_saves');
+    expect(withPacks.activities.first.pack?.name, 'Basic Goalie');
     expect(withPacks.activities.first.method, TrainingMethod.customTraining);
 
-    final without = make(10, progress: progress, profile: beginner);
+    final without = make(10, progress: progress, profile: silver);
     expect(without.activities.first.pack, isNull);
     expect(without.activities.first.method, isNot(TrainingMethod.customTraining));
+  });
+
+  test('a pack above your rank band is never offered, even to a top player',
+      () {
+    // Basic Goalie is Silver-tagged. An SSL player is far above the one-below
+    // band, so a session for them must never surface it.
+    final progress = {
+      'basic_saves': const ProgressModel(
+        skillId: 'basic_saves',
+        status: SkillStatus.practicing,
+      ),
+    };
+    const ssl = PlayerProfile(rank: Stage.ssl, onboarded: true);
+    final session = make(10, progress: progress, profile: ssl, packs: true);
+    expect(session.activities.first.pack, isNull);
   });
 
   test('the same progress always gives the same session', () {

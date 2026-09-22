@@ -1,5 +1,11 @@
 # analysis_options.yaml
 
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - macos/**
 include: package:flutter_lints/flutter.yaml
 
 linter:

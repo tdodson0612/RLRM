@@ -16,18 +16,37 @@ void main() {
     test('the app contains no network, ads, payment or account code', () {
       final banned = RegExp(
         'dart:io|package:http|package:dio|firebase|google_mobile_ads|'
-        'in_app_purchase|NetworkImage|Image\\.network|HttpClient|WebSocket|'
-        'url_launcher',
+        'in_app_purchase|NetworkImage|Image\\.network|HttpClient|WebSocket',
         caseSensitive: false,
       );
+      // url_launcher is allowed, but only for the mailto: report link below;
+      // that file, and only that file, is exempt from the ban on it.
+      const urlLauncherAllowedIn = 'lib/data/pack_report_mail.dart';
       for (final file in filesUnder('lib', ending: '.dart')) {
-        expect(banned.hasMatch(file.readAsStringSync()), isFalse,
+        final text = file.readAsStringSync();
+        expect(banned.hasMatch(text), isFalse,
             reason: '${file.path} uses something that needs the internet');
+        final usesUrlLauncher = text.contains('url_launcher');
+        if (usesUrlLauncher) {
+          expect(file.path.replaceAll('\\', '/').endsWith(urlLauncherAllowedIn),
+              isTrue,
+              reason: '${file.path} imports url_launcher outside the one '
+                  'file allowed to use it');
+        }
       }
       final pubspec = File('pubspec.yaml').readAsStringSync();
       final dependencies = pubspec.split('dev_dependencies:').first;
       expect(banned.hasMatch(dependencies), isFalse,
           reason: 'pubspec.yaml lists a network, ads or payment package');
+    });
+
+    test('the one file allowed to use url_launcher only ever builds a '
+        'mailto: link, never http or https', () {
+      final text =
+          File('lib/data/pack_report_mail.dart').readAsStringSync();
+      expect(text.contains("scheme: 'mailto'"), isTrue);
+      expect(RegExp('https?://').hasMatch(text), isFalse,
+          reason: 'this file must never construct a web URL');
     });
 
     test('the Android app does not ask for the internet or the camera', () {
