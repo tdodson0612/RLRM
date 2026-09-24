@@ -149,8 +149,9 @@ class _HomeBody extends ConsumerWidget {
               LinearProgressIndicator(
                 value: total == 0 ? 0 : finished / total,
                 minHeight: 8,
-                semanticsLabel: 'Overall progress',
-                semanticsValue: '$finished of $total skills',
+                semanticsLabel: 'Overall progress: $finished of $total skills',
+                semanticsValue:
+                    total == 0 ? '0%' : '${(finished / total * 100).round()}%',
               ),
             ],
           ),

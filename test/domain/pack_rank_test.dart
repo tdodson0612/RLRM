@@ -54,7 +54,7 @@ void main() {
         .map((sid) => position[sid])
         .where((i) => i != null)
         .cast<int>()
-        .reduce((a, b) => a < b ? a : b);
+        .reduce((int a, int b) => a < b ? a : b);
 
     (Stage, int) key(p) => (p.difficulty, earliest(p));
 

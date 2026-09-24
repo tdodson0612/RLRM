@@ -97,7 +97,11 @@ void main() {
     final withPacks =
         make(10, progress: progress, profile: silver, packs: true);
     expect(withPacks.activities.first.skill.id, 'basic_saves');
-    expect(withPacks.activities.first.pack?.name, 'Basic Goalie');
+    // basic_saves has two candidate packs: Novice Defender (Bronze) and
+    // Basic Goalie (Silver). The pack-ordering feature places the easier
+    // one first, and a Silver player's band includes both, so the easier
+    // Bronze pack is the one actually offered.
+    expect(withPacks.activities.first.pack?.name, 'Novice Defender');
     expect(withPacks.activities.first.method, TrainingMethod.customTraining);
 
     final without = make(10, progress: progress, profile: silver);

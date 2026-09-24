@@ -314,7 +314,14 @@ void main() {
     expect(find.text('[Why You Suck] Shadow Defense'), findsOneWidget);
 
     await tapText(tester, 'Shadow Defense');
-    await tester.tap(find.byTooltip('Add to favorites'));
+    // The skill's own favorite lives in the AppBar; the linked pack card
+    // further down has its own separate "Add to favorites" button, so
+    // .first isn't reliably the skill's - target the AppBar one directly.
+    final skillFavorite = find.descendant(
+      of: find.byType(AppBar),
+      matching: find.byTooltip('Add to favorites'),
+    );
+    await tester.tap(skillFavorite);
     await tester.pumpAndSettle();
     expect(container.read(progressProvider)['shadow_defense_1']?.favorite,
         isTrue);

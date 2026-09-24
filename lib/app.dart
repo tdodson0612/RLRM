@@ -2,124 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/constants/app_colors.dart';
-import 'data/services/prefs_service.dart';
-import 'presentation/providers/settings_provider.dart';
-import 'presentation/providers/user_profile_provider.dart';
-import 'presentation/screens/onboarding/alphabet_screen.dart';
-import 'presentation/screens/home/home_screen.dart';
-import 'presentation/screens/reader/reader_screen.dart';
-import 'presentation/screens/reader/verse_quiz_screen.dart';
-import 'presentation/screens/vocabulary/vocabulary_screen.dart';
-import 'presentation/screens/settings/settings_screen.dart';
 
-class BabbleTowerApp extends ConsumerWidget {
-  const BabbleTowerApp({super.key});
+import 'core/theme/app_theme.dart';
+import 'data/profile_provider.dart';
+import 'data/theme_mode_provider.dart';
+import 'features/onboarding/onboarding_screen.dart';
+import 'features/shell/app_shell.dart';
+
+class RoadmapApp extends ConsumerWidget {
+  const RoadmapApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final darkMode = ref.watch(settingsProvider.select((s) => s.darkMode));
-
+    final onboarded = ref.watch(profileProvider.select((p) => p.onboarded));
     return MaterialApp(
-      title: 'Babble Tower',
+      title: 'RLRM',
       debugShowCheckedModeBanner: false,
-      themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.light.background,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.light.primary,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        extensions: const [AppColors.light],
-      ),
-      darkTheme: ThemeData(
-        scaffoldBackgroundColor: AppColors.dark.background,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.dark.primary,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        extensions: const [AppColors.dark],
-      ),
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(
-              builder: (_) => const _RootRedirect(),
-            );
-          case '/alphabet':
-            return MaterialPageRoute(
-              builder: (_) => const AlphabetScreen(),
-            );
-          case '/home':
-            return MaterialPageRoute(
-              builder: (_) => const HomeScreen(),
-            );
-          case '/reader':
-            return MaterialPageRoute(
-              builder: (_) => const ReaderScreen(),
-            );
-          case '/verse_quiz':
-            return MaterialPageRoute(
-              builder: (_) => const VerseQuizScreen(),
-              settings: settings,
-            );
-          case '/vocabulary':
-            return MaterialPageRoute(
-              builder: (_) => const VocabularyScreen(),
-            );
-          case '/settings':
-            return MaterialPageRoute(
-              builder: (_) => const SettingsScreen(),
-            );
-          default:
-            return MaterialPageRoute(
-              builder: (_) => const _RootRedirect(),
-            );
-        }
-      },
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ref.watch(themeModeProvider),
+      home: onboarded ? const AppShell() : const OnboardingScreen(),
     );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Root redirect — decides where to send the user on cold launch.
-//
-// Babble Tower now teaches a single fixed pair (English speakers reading
-// Koine Greek), so there is no language-selection step. The only gate
-// left is the Greek alphabet lesson, which every user must complete
-// (or explicitly skip) before reaching Home.
-// ---------------------------------------------------------------------------
-
-class _RootRedirect extends ConsumerWidget {
-  const _RootRedirect();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileState = ref.watch(userProfileProvider);
-    final colors = context.colors;
-
-    // Still loading from Hive — show splash
-    if (profileState.isLoading) {
-      return Scaffold(
-        backgroundColor: colors.background,
-        body: Center(
-          child: CircularProgressIndicator(color: colors.primary),
-        ),
-      );
-    }
-
-    // Check PrefsService first (authoritative — written by completeAlphabet()),
-    // then fall back to the Hive-backed profileState flag.
-    final alphabetDone =
-        PrefsService.alphabetDone || profileState.hasCompletedAlphabet;
-
-    if (!alphabetDone) {
-      return const AlphabetScreen();
-    }
-
-    return const HomeScreen();
   }
 }

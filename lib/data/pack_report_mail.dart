@@ -3,7 +3,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../domain/enums.dart';
 import '../domain/models/player_profile.dart';
 import '../domain/models/training_pack_model.dart';
 import 'pack_report_provider.dart';

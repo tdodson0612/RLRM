@@ -37,6 +37,11 @@ void main() {
 
   Widget app({required bool showUnverified, Stage rank = Stage.bronze}) =>
       ProviderScope(
+        // A unique key forces Flutter to build a genuinely fresh provider
+        // tree on every call, so a test that re-pumps with a different rank
+        // mid-test actually gets that new rank instead of silently reusing
+        // the previous pump's state.
+        key: UniqueKey(),
         overrides: [
           curriculumProvider.overrideWith((ref) => curriculum),
           profileProvider.overrideWith(() => _RankedPlayer(rank)),

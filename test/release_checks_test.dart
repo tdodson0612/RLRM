@@ -69,13 +69,16 @@ void main() {
   group('no game assets', () {
     test('the app bundles only its own data, font and icon', () {
       final allowed = {'.json', '.ttf', '.txt', '.png'};
+      // Original art only: the app icon, and the original car icons/hero
+      // added for the nav bar and Home background (see assets/cars/).
+      const allowedPngFolders = ['assets/icon/', 'assets/cars/'];
       for (final file in filesUnder('assets')) {
         final path = file.path.replaceAll('\\', '/');
         final ext = path.substring(path.lastIndexOf('.'));
         expect(allowed.contains(ext), isTrue, reason: 'Unexpected asset $path');
         if (ext == '.png') {
-          expect(path.endsWith('assets/icon/icon.png'), isTrue,
-              reason: 'The only image is the original app icon, not $path');
+          expect(allowedPngFolders.any(path.contains), isTrue,
+              reason: 'Unexpected image, not original app art: $path');
         }
       }
     });
@@ -98,14 +101,21 @@ void main() {
       expect(codes.toSet().length, codes.length);
     });
 
-    test('every pack names its creator, an official source and a check date',
+    test('every pack names its creator, a trusted source and a check date',
         () {
+      // Packs are sourced either from official Rocket League posts or from
+      // Prejump, a maintained, rank-tagged community database (see
+      // tools/data_packs.py for why Prejump replaced the old dataset).
+      const trustedSources = [
+        'https://www.rocketleague.com/',
+        'https://prejump.com/',
+      ];
       for (final p in packs) {
         expect(p['creator'], isNotNull, reason: '${p['id']} has no creator');
         expect(
-          (p['sourceUrl'] as String).startsWith('https://www.rocketleague.com/'),
+          trustedSources.any((p['sourceUrl'] as String).startsWith),
           isTrue,
-          reason: '${p['id']} is not traced to an official post',
+          reason: '${p['id']} is not traced to a trusted source',
         );
         expect(p['lastChecked'], isNotNull, reason: '${p['id']}');
       }

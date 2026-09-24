@@ -74,8 +74,8 @@ class _Body extends ConsumerWidget {
               LinearProgressIndicator(
                 value: percent,
                 minHeight: 8,
-                semanticsLabel: 'Overall progress',
-                semanticsValue: '$finished of $total skills',
+                semanticsLabel: 'Overall progress: $finished of $total skills',
+                semanticsValue: '${(percent * 100).round()}%',
               ),
             ],
           ),
@@ -212,8 +212,9 @@ class _Bar extends StatelessWidget {
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: total == 0 ? 0 : finished / total,
-            semanticsLabel: '$label progress',
-            semanticsValue: '$finished of $total skills',
+            semanticsLabel: '$label progress: $finished of $total skills',
+            semanticsValue:
+                total == 0 ? '0%' : '${(finished / total * 100).round()}%',
           ),
         ],
       ),

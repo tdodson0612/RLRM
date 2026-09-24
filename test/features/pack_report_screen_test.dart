@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:roadmap_for_rl/core/theme/app_theme.dart';
+import 'package:roadmap_for_rl/core/widgets/app_card.dart';
 import 'package:roadmap_for_rl/data/curriculum_repository.dart';
 import 'package:roadmap_for_rl/data/pack_report_mail.dart';
 import 'package:roadmap_for_rl/data/pack_report_provider.dart';
@@ -48,7 +49,7 @@ void main() {
             return true;
           }),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
           theme: AppTheme.dark,
           home: TrainingScreen(showUnverified: true),
         ),
@@ -56,11 +57,22 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Bronze band by default: Novice Defender is visible.
+    // Bronze band by default: Novice Defender is visible. Another Bronze
+    // pack (Woolly's) shows too, so we must target Novice Defender's own
+    // report button specifically - .first would grab whichever pack's
+    // button happens to render earlier on the page, not necessarily this
+    // one, and reporting the wrong pack would leave Novice Defender's own
+    // difficulty untouched.
     expect(find.text('Novice Defender'), findsOneWidget);
 
-    final reportButton = find.widgetWithText(OutlinedButton, 'Report difficulty')
-        .first;
+    final noviceCard = find.ancestor(
+      of: find.text('Novice Defender'),
+      matching: find.byType(AppCard),
+    );
+    final reportButton = find.descendant(
+      of: noviceCard,
+      matching: find.widgetWithText(OutlinedButton, 'Report difficulty'),
+    );
     await tester.ensureVisible(reportButton);
     await tester.pumpAndSettle();
     await tester.tap(reportButton);
@@ -95,7 +107,7 @@ void main() {
         ],
         child: Builder(builder: (context) {
           container = ProviderScope.containerOf(context);
-          return const MaterialApp(
+          return MaterialApp(
             theme: AppTheme.dark,
             home: TrainingScreen(showUnverified: true),
           );
