@@ -42,7 +42,7 @@ Games or Psyonix.
 - **Screenshots and video:** app screens only. No game footage, game screenshots, logos or characters.
 - **Apple privacy label / Google Data safety:** no data collected, none shared.
 - **Privacy policy URL:** host `docs/PRIVACY_POLICY.md` somewhere public (see `docs/LEGAL_CHECKLIST.md`).
-- **Support contact:** your email address.
+- **Support contact:** terryd0612@gmail.com
 - **Pricing:** free, with no in-app purchases and no ads. Epic's policy does not allow a monetary goal.
 
 ## Filling in the required Epic notice

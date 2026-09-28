@@ -50,4 +50,4 @@ under Settings > Open-source licenses.
 If this policy changes, the new version will be published here with a new date.
 
 ## Contact
-Your email address goes here.
+terryd0612@gmail.com

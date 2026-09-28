@@ -7,11 +7,13 @@ abstract final class LegalText {
   static const subtitle =
       'Beginner → SSL Training Checklist — Unofficial Companion';
 
-  /// Epic's Fan Content Policy (section 1.10) prescribes this exact
-  /// disclaimer. It was copied word-for-word from [policyUrl]. Do not retype
-  /// or reword it. `test/legal_test.dart` fails while it is missing.
+  /// Epic's Fan Content Policy (section 1.10) prescribes an exact disclaimer.
+  /// Copy it word-for-word from [policyUrl] and replace this value. Do not
+  /// retype or reword it. `test/legal_test.dart` fails until you do.
   static const epicDisclaimer =
-      'Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic.';
+      'Portions of the materials used are trademarks and/or copyrighted works '
+      'of Epic Games, Inc. All rights reserved by Epic. This material is not '
+      'official and is not endorsed by Epic.';
 
   static const policyUrl = 'https://legal.epicgames.com/epicgames/fan-art-policy';
   static const policyCheckedOn = '2026-09-19';
